@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Content Generator</h1>
+        <form id="input-form">
+            <textarea id="user_input" name="user_input" placeholder="Enter your prompt here..." required></textarea>
+            <button type="submit">Generate</button>
+        </form>
+        <div id="response-container"></div>
+    </div>
+    <script>
+        document.getElementById('input-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const userInput = document.getElementById('user_input').value;
+            const responseContainer = document.getElementById('response-container');
+            responseContainer.innerHTML = '<p>Generating...</p>';
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_input: userInput }),
+                });
+                const data = await response.json();
+                if (data.generated_text) {
+                    responseContainer.innerHTML = `<p>${data.generated_text}</p>`;
+                } else {
+                    responseContainer.innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                responseContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
